@@ -2,15 +2,16 @@ Vagrant.configure("2") do |config|
   config.vm.define "haproxy" do |haproxy|
     haproxy.vm.box = "ubuntu/trusty64"
         haproxy.vm.hostname = "haproxy.localnet"
-        haproxy.vm.network "private_network", ip: "192.168.30.2"
+        haproxy.vm.network "private_network", ip: "192.168.50.2"
+        haproxy.vm.provision :shell, :path => "haproxy.sh"
   end
   config.vm.define "app" do |app|
     app.vm.box = "ubuntu/trusty64"
         app.vm.hostname = "app.localnet"
         app.vm.network "forwarded_port", guest: 3000, host: 3000
         app.vm.network "forwarded_port", guest: 8085, host: 8085
-        app.vm.network "private_network", ip: "192.168.30.3"
-        app.vm.provision :shell, :path => "node.sh"
+        app.vm.network "private_network", ip: "192.168.50.3"
+        app.vm.provision :shell, :path => "application.sh"
         app.vm.provision "shell", inline: <<-SHELL
           cd /opt
           add-apt-repository ppa:openjdk-r/ppa -y
@@ -45,7 +46,7 @@ Vagrant.configure("2") do |config|
     db.vm.box = "ubuntu/trusty64"
         db.vm.hostname = "db.localnet"
         db.vm.network "forwarded_port", guest: 27017, host: 27017   # MongoDB
-        db.vm.network "private_network", ip: "192.168.30.4"
+        db.vm.network "private_network", ip: "192.168.50.4"
         db.vm.provision :shell, :path => "mongodb.sh"
   end
 end
