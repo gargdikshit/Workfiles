@@ -8,7 +8,7 @@ Vagrant 2.x.x
 
 To run playbook
 $ git clone https://github.com/gargdikshit/Workfiles.git
-$ cd Wokfiles/Vagrant/#-tier
+$ cd Wokfiles/Vagrant/3-tier
 $ vagrant up 
 
 OS Used:Ubuntu
