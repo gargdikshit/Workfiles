@@ -16,5 +16,5 @@ Database used: Mongodb
 Language/framework used: Node,Java, Maven
 
 After vagrunt up:
-3 Vm's will installes - Haproxy, app, db
+3 Vm's will installed - Haproxy, app, db and
 Application will be cloned from git and deployed
