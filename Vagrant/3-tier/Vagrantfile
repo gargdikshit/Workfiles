@@ -1,35 +1,51 @@
 Vagrant.configure("2") do |config|
   config.vm.define "haproxy" do |haproxy|
     haproxy.vm.box = "ubuntu/trusty64"
-	haproxy.vm.hostname = "haproxy.localnet"
-	haproxy.vm.network "private_network", ip: "192.168.30.1"
+        haproxy.vm.hostname = "haproxy.localnet"
+        haproxy.vm.network "private_network", ip: "192.168.30.2"
   end
   config.vm.define "app" do |app|
     app.vm.box = "ubuntu/trusty64"
-	app.vm.hostname = "app.localnet"
-	app.vm.network "forwarded_port", guest: 3000, host: 3000
-	app.vm.network "forwarded_port", guest: 8085, host: 8085
-	app.vm.network "private_network", ip: "192.168.30.2"
-	app.vm.provision "file", source: "D:\Vagrant\3-tier", destination: "/home/vagrant/code"
-	app.vm.provision :shell, :path => "node.sh"
-	app.vm.provision "shell", inline: <<-SHELL
-	  cd /opt
-	  add-apt-repository ppa:openjdk-r/ppa -y
-      apt-get update
-      echo "\n----- Installing Apache and Java 8 ------\n"
-      apt-get -y install openjdk-8-jdk
-      update-alternatives --config java
-	  cd /home/vagrant/code
-	  java -jar ShortestRoute-0.0.1-SNAPSHOT.jar &
-	  cd /home/vagrant/code/ShortestPathUI
-	  npm start &
+        app.vm.hostname = "app.localnet"
+        app.vm.network "forwarded_port", guest: 3000, host: 3000
+        app.vm.network "forwarded_port", guest: 8085, host: 8085
+        app.vm.network "private_network", ip: "192.168.30.3"
+        app.vm.provision :shell, :path => "node.sh"
+        app.vm.provision "shell", inline: <<-SHELL
+          cd /opt
+          add-apt-repository ppa:openjdk-r/ppa -y
+          apt-get update
+          echo "\n----- Installing Apache and Java 8 ------\n"
+          apt-get -y install openjdk-8-jdk
+          update-alternatives --config java
+          echo "java installed"
+          sudo apt-get install -y maven
+          echo "maven installed"
+          sleep 5s
+          cd /home/vagrant
+          git clone https://github.com/dikshitgarg/shortest_path_service.git
+          sleep 30s
+          echo "cloned"
+          cd /home/vagrant/shortest_path_service/ShortestRoute
+          mvn clean install
+          cd /home/vagrant/shortest_path_service/ShortestRoute/target/
+          nohup java -jar ShortestRoute-0.0.1-SNAPSHOT.jar &
+          sleep 30s
+          echo "started jar"
+          cd /home/vagrant/shortest_path_service/ShortestPathUI
+          sudo npm install
+          sleep 30s
+          echo "starting ui"
+          node app.js &
+          sleep 10s
+          echo "ui strated"
   SHELL
   end
   config.vm.define "db" do |db|
     db.vm.box = "ubuntu/trusty64"
-	db.vm.hostname = "db.localnet"
-	db.vm.network "forwarded_port", guest: 27017, host: 27017   # MongoDB
-	db.vm.network "private_network", ip: "192.168.30.3"
-	db.vm.provision :shell, :path => "mongodb.sh"
+        db.vm.hostname = "db.localnet"
+        db.vm.network "forwarded_port", guest: 27017, host: 27017   # MongoDB
+        db.vm.network "private_network", ip: "192.168.30.4"
+        db.vm.provision :shell, :path => "mongodb.sh"
   end
 end
