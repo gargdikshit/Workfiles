@@ -12,3 +12,5 @@ $ cd Wokfiles/Vagrant/3-tier
 $ vagrant up 
 
 OS Used:Ubuntu
+Database used: Mongodb
+Language/framework used: Node,Java, Maven
